@@ -250,7 +250,8 @@ struct redisCommand redisCommandTable[] = {
     {"script",scriptCommand,-2,"ras",0,NULL,0,0,0,0,0},
     {"time",timeCommand,1,"rR",0,NULL,0,0,0,0,0},
     {"bitop",bitopCommand,-4,"wm",0,NULL,2,-1,1,0,0},
-    {"bitcount",bitcountCommand,-2,"r",0,NULL,1,1,1,0,0}
+    {"bitcount",bitcountCommand,-2,"r",0,NULL,1,1,1,0,0},
+    {"bing",bingCommand,1,"r",0,NULL,1,1,1,0,0} //nityad
 };
 
 /*============================ Utility functions ============================ */
@@ -478,14 +479,14 @@ unsigned int dictEncObjHash(const void *key) {
 }
 
 /* nityad interval set dictType definition*/
-dictType isetDictType = {
-    dictEncObjHash,            /* hash function */
-    NULL,                      /* key dup */
-    NULL,                      /* val dup */
-    dictEncObjKeyCompare,      /* key compare */
-    dictRedisObjectDestructor, /* key destructor */
-    NULL                       /* val destructor */
-};
+// dictType isetDictType = {
+//     dictEncObjHash,            /* hash function */
+//     NULL,                      /* key dup */
+//     NULL,                       val dup 
+//     dictEncObjKeyCompare,      /* key compare */
+//     dictRedisObjectDestructor, /* key destructor */
+//     NULL                       /* val destructor */
+// };
 
 /* Sets type hash table */
 dictType setDictType = {
@@ -1173,6 +1174,7 @@ void createSharedObjects(void) {
     shared.nullmultibulk = createObject(REDIS_STRING,sdsnew("*-1\r\n"));
     shared.emptymultibulk = createObject(REDIS_STRING,sdsnew("*0\r\n"));
     shared.pong = createObject(REDIS_STRING,sdsnew("+PONG\r\n"));
+    shared.bong = createObject(REDIS_STRING, sdsnew("+BONG\r\n"));//nityad
     shared.queued = createObject(REDIS_STRING,sdsnew("+QUEUED\r\n"));
     shared.wrongtypeerr = createObject(REDIS_STRING,sdsnew(
         "-ERR Operation against a key holding the wrong kind of value\r\n"));
@@ -1974,6 +1976,10 @@ void authCommand(redisClient *c) {
 
 void pingCommand(redisClient *c) {
     addReply(c,shared.pong);
+}
+
+void bingCommand(redisClient *c){
+    addReply(c, shared.bong);
 }
 
 void echoCommand(redisClient *c) {
